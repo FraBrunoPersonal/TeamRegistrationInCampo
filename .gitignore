@@ -130,6 +130,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
+.venv_test
 env/
 venv/
 ENV/
@@ -192,3 +193,10 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+.Pallavolo/
+.Calcetto/
+
+incampo-iscritti-al-torneo-calcetto.xlsx
+incampo-iscritti-al-torneo-pallavolo.xlsx
+
