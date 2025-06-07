@@ -15,6 +15,16 @@ H_CEL = 15
 H_CEL_PL = 5
 
 
+def somma_taglie(squadre):
+    conteggio_totale = {'S': 0, 'M': 0, 'L': 0, 'XL': 0}
+
+    for squadra in squadre:
+        for taglia, conteggio in squadra.conteggioTaglie.items():
+            conteggio_totale[taglia] += conteggio
+
+    return conteggio_totale
+
+
 def create_resp_pdf(tounament, list_teams, file_name):
     pdf = FPDF("L", "mm", "A4")
     pdf.add_page()
@@ -28,9 +38,9 @@ def create_resp_pdf(tounament, list_teams, file_name):
     pdf.cell(L_CEL, H_CEL_PL, txt="Squadra", border=1)
     pdf.cell(L_CEL, H_CEL_PL, txt="Referente", border=1)
     pdf.cell(L_CEL, H_CEL_PL, txt="Numero", border=1)
-    pdf.cell(L_CEL*2, H_CEL_PL, txt="Email", border=1)
-    pdf.cell(L_CEL/2, H_CEL_PL, txt="C.I", border=1)
-    pdf.cell(L_CEL/2, H_CEL_PL, txt="Mod.Min.", border=1)
+    pdf.cell(L_CEL * 2, H_CEL_PL, txt="Email", border=1)
+    pdf.cell(L_CEL / 2, H_CEL_PL, txt="C.I", border=1)
+    pdf.cell(L_CEL / 2, H_CEL_PL, txt="Mod.Min.", border=1)
     pdf.cell(0, H_CEL_PL, txt="", ln=1)
 
     pdf.set_line_width(0.1)
@@ -39,12 +49,32 @@ def create_resp_pdf(tounament, list_teams, file_name):
         pdf.cell(L_CEL, H_CEL_PL, txt=f"{t.team_name}", border=1)
         pdf.cell(L_CEL, H_CEL_PL, txt=f"{t.resp_name}", border=1)
         pdf.cell(L_CEL, H_CEL_PL, txt=f"{t.tel}", border=1)
-        pdf.cell(L_CEL*2, H_CEL_PL, txt=f"{t.mail}", border=1)
-        pdf.cell(L_CEL/2, H_CEL_PL, txt=f" ", border=1)
-        pdf.cell(L_CEL/2, H_CEL_PL, txt=f" ", border=1)
+        pdf.cell(L_CEL * 2, H_CEL_PL, txt=f"{t.mail}", border=1)
+        pdf.cell(L_CEL / 2, H_CEL_PL, txt=f" ", border=1)
+        pdf.cell(L_CEL / 2, H_CEL_PL, txt=f" ", border=1)
         pdf.cell(0, H_CEL_PL, txt="", ln=1)
 
+    pdf.add_page()
+    pdf.cell(0, H_CEL_INT, txt=f"RIEPILOGO TAGLIE", ln=1)
+    conteggio_totale = somma_taglie(list_teams)
+
+    pdf.set_font("Times", style="B", size=9)
+    pdf.set_line_width(0.3)
+    headers = ["S", "M", "L", "XL"]
+
+    for header in headers:
+        pdf.cell(15, 10, txt=header, border='B')
+    pdf.cell(0, 10, ln=1)
+
+    pdf.set_font("Times", size=8)
+    pdf.cell(15, H_CEL_PL, txt=str(conteggio_totale['S']), border='B')
+    pdf.cell(15, H_CEL_PL, txt=str(conteggio_totale['M']), border='B')
+    pdf.cell(15, H_CEL_PL, txt=str(conteggio_totale['L']), border='B')
+    pdf.cell(15, H_CEL_PL, txt=str(conteggio_totale['XL']), border='B')
+    pdf.cell(0, H_CEL_PL, ln=1)
+
     pdf.output(f"{tounament}/{file_name}.pdf")
+
 
 def read_team(tournament_team):
     list_teams = []
@@ -62,16 +92,23 @@ def read_team(tournament_team):
                 player = parse_player_info(player_info)
                 team.add_player(player)
 
-        list_teams.append(team)
+        ############################
+        ### Modifiche AC picchia ###
+        if row['Nome squadra'] == 'AC picchia':
+            team.add_player(Player('Francesco', 'Ferraiuolo', '2001-09-05', 'Cuneo', 'CA10580JP', None, 'L'))
+        ### -------------------- ###
+        ############################
 
+        list_teams.append(team)
 
     return list_teams
 
 
 def create_teams_folders(tournament, list_teams):
     for t in list_teams:
-        #t.to_string()
+        # t.to_string()
         t.create_team_folder(tournament)
+
 
 def parse_player_info(info):
     """
@@ -88,6 +125,14 @@ def parse_player_info(info):
 
     # Extract individual details
     name, surname = player_data['Nome e cognome'].split(' ', 1)
+
+    ############################
+    ### Modifiche AC picchia ###
+    if name == 'El': name = 'Amine'
+    if surname == 'Baharaoui Amine': surname = 'El Bahraoui'
+    ### -------------------- ###
+    ############################
+
     date = player_data['Data di nascita']
     place = player_data['Luogo di nascita']
     ci = player_data['Numero carta identità']
@@ -127,26 +172,15 @@ def main():
     create_teams_folders(tournament, list_teams)
     create_resp_pdf(tournament, list_teams, file_name_referenti)
 
+    # tournament_team = pd.read_excel(NOME_FILE)
 
-    #tournament_team = pd.read_excel(NOME_FILE)
+    # print(tournament_team)
 
-    #print(tournament_team)
-
-
-
-
-
-
-
-
-
-        #   for col_name, cell_value in row.items():
-        #    print(f"  Colonna '{col_name}': {cell_value}")
-        #    print(f"")
-        #   list_teams.append(new Team(col_name['']))
-
+    #   for col_name, cell_value in row.items():
+    #    print(f"  Colonna '{col_name}': {cell_value}")
+    #    print(f"")
+    #   list_teams.append(new Team(col_name['']))
 
 
 if __name__ == '__main__':
-
     main()

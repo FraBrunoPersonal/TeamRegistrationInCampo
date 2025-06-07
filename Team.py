@@ -18,6 +18,12 @@ class Team:
         self.resp_name = resp_name
         self.tel = tel
         self.mail = mail
+        self.conteggioTaglie = {
+            'S' : 0,
+            'M' : 0,
+            'L' : 0,
+            'XL' : 0,
+        }
         self.players = list()
 
     def add_player(self, player):
@@ -139,6 +145,7 @@ class Team:
             pdf.cell(L_CEL, H_CEL_PL, txt=player.ci, border='B')
             pdf.cell(L_CEL, H_CEL_PL, txt=player.cat if player.cat else "Non tesserato", border='B')
             pdf.cell(L_CEL, H_CEL_PL, txt=player.shirt_size, border='B')
+            self.conteggioTaglie[player.shirt_size] += 1
             pdf.cell(0, H_CEL_PL, ln=1)
 
         pdf.cell(70, 15, txt=" ")
@@ -165,6 +172,50 @@ class Team:
         pdf.cell(L_CEL, H_CEL_PL * 2, txt=f" ")
         pdf.cell(L_CEL, H_CEL_PL * 2, txt=f" ", border='B')
         pdf.cell(L_CEL, H_CEL_PL * 2, txt=f" ", border='B')
+
+        pdf.add_page()
+        pdf.set_font("Times", style="B", size=15)
+
+        pdf.cell(0, H_CEL_INT, txt=f"{self.team_name.upper()}", ln=1)
+        pdf.set_font("Times", size=10)
+
+        # Intestazioni della tabella
+        pdf.set_font("Times", style="B", size=9)
+        pdf.set_line_width(0.3)
+        headers = ["NOME", "COGNOME", "TAGLIA MAGLIETTA"]
+
+        for header in headers:
+            pdf.cell(L_CEL, 10, txt=header, border='B')
+        pdf.cell(0, 10, ln=1)
+
+        pdf.set_font("Times", size=8)
+        for player in self.players:
+            pdf.cell(L_CEL, H_CEL_PL, txt=player.name, border='B')
+            pdf.cell(L_CEL, H_CEL_PL, txt=player.surname, border='B')
+            pdf.cell(L_CEL, H_CEL_PL, txt=player.shirt_size, border='B')
+            pdf.cell(0, H_CEL_PL, ln=1)
+
+        pdf.cell(70, 15, txt=" ")
+        pdf.cell(0, 15, txt=" ", ln=1)
+
+        pdf.cell(0, H_CEL_INT, txt=f"QUANTITA' PER TAGLIA", ln=1)
+        # Intestazioni della tabella
+        pdf.set_font("Times", style="B", size=9)
+        pdf.set_line_width(0.3)
+        headers = ["S", "M", "L", "XL"]
+
+        for header in headers:
+            pdf.cell(15, 10, txt=header, border='B')
+        pdf.cell(0, 10, ln=1)
+
+        pdf.set_font("Times", size=8)
+        pdf.cell(15, H_CEL_PL, txt=str(self.conteggioTaglie['S']), border='B')
+        pdf.cell(15, H_CEL_PL, txt=str(self.conteggioTaglie['M']), border='B')
+        pdf.cell(15, H_CEL_PL, txt=str(self.conteggioTaglie['L']), border='B')
+        pdf.cell(15, H_CEL_PL, txt=str(self.conteggioTaglie['XL']), border='B')
+        pdf.cell(0, H_CEL_PL, ln=1)
+
+
 
         # Salva il PDF
         pdf.output(f"{tournament}/{self.team_name}/{self.team_name}.pdf")
