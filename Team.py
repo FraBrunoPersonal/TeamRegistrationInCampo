@@ -50,10 +50,10 @@ class Team:
         guessed_gender = d.get_gender(name)
         # Mappa il risultato della libreria al formato desiderato
         if guessed_gender in ["male", "mostly_male"]:
-            print(f"Nome: {name} - Risultato: {guessed_gender}")
+            #print(f"Nome: {name} - Risultato: {guessed_gender}")
             return "M"
         elif guessed_gender in ["female", "mostly_female"]:
-            print(f"Nome: {name} - Risultato: {guessed_gender}")
+            #print(f"Nome: {name} - Risultato: {guessed_gender}")
             return "F"
 
         name = name.split()[0].capitalize()  # Prendi solo il primo nome e capitalizza
@@ -65,9 +65,10 @@ class Team:
             return " "
 
     def create_team_folder(self, tournament):
-        os.mkdir(f"{tournament}/{self.team_name}")
-        os.mkdir(f"{tournament}/{self.team_name}/AUTH")
-        os.mkdir(f"{tournament}/{self.team_name}/CM")
+        path_folder = '/Users/francescobruno/Library/CloudStorage/GoogleDrive-francesco.bruno@vbcvallestura.it/Il mio Drive/VBC_Valle_Stura/StraValEsturo/2025_StraValEsturo/Squadre'
+        os.mkdir(f"{path_folder}/{tournament}/{self.team_name}")
+        os.mkdir(f"{path_folder}/{tournament}/{self.team_name}/AUTH")
+        os.mkdir(f"{path_folder}/{tournament}/{self.team_name}/CM")
 
         pdf = FPDF("L", "mm", "A4")
         pdf.set_auto_page_break(auto=False)  # Disabilita i salti automatici di pagina
@@ -131,7 +132,7 @@ class Team:
             ws[f"G{row}"] = player.place
 
         # Salva il file con il nome della squadra
-        output_path = os.path.join(f"{tournament}/{self.team_name}/", f"{self.team_name}.xlsx")
+        output_path = os.path.join(f"{path_folder}/{tournament}/{self.team_name}/", f"{self.team_name}.xlsx")
         wb.save(output_path)
         print(f"File creato: {output_path}")
 
@@ -218,4 +219,4 @@ class Team:
 
 
         # Salva il PDF
-        pdf.output(f"{tournament}/{self.team_name}/{self.team_name}.pdf")
+        pdf.output(f"{path_folder}/{tournament}/{self.team_name}/{self.team_name}.pdf")
